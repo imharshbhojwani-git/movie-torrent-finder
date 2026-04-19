@@ -1,0 +1,115 @@
+.container {
+  border-top: 1px solid #2a2a2a;
+  padding: 16px 20px 20px;
+}
+
+.heading {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 12px;
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tableHead {
+  display: grid;
+  grid-template-columns: 160px 100px 90px 90px 1fr;
+  font-size: 0.75rem;
+  color: #555;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0 12px 6px;
+  border-bottom: 1px solid #222;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 160px 100px 90px 90px 1fr;
+  align-items: center;
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 8px;
+  padding: 10px 12px;
+  transition: border-color 0.15s;
+}
+
+.row:hover {
+  border-color: #444;
+}
+
+.qualityBadge {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 4px;
+}
+
+.type {
+  font-size: 0.72rem;
+  color: #666;
+  margin-left: 6px;
+}
+
+.size {
+  font-size: 0.88rem;
+  color: #bbb;
+}
+
+.seeds {
+  font-size: 0.88rem;
+}
+
+.seedsCount {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.peers {
+  font-size: 0.88rem;
+  color: #c0392b;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.magnetBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #1a2a1a;
+  color: #5dbb63;
+  border: 1px solid #2a4a2a;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.magnetBtn:hover {
+  background: #2a3a2a;
+}
+
+@media (max-width: 680px) {
+  .tableHead {
+    display: none;
+  }
+  .row {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+}

@@ -1,0 +1,66 @@
+.form {
+  max-width: 680px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.inputWrap {
+  display: flex;
+  align-items: center;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.inputWrap:focus-within {
+  border-color: #e50914;
+}
+
+.icon {
+  padding: 0 14px;
+  font-size: 1.1rem;
+  opacity: 0.6;
+}
+
+.input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #e0e0e0;
+  font-size: 1rem;
+  padding: 16px 8px;
+  font-family: inherit;
+}
+
+.input::placeholder {
+  color: #555;
+}
+
+.input:disabled {
+  opacity: 0.5;
+}
+
+.button {
+  background: #e50914;
+  color: #fff;
+  border: none;
+  padding: 16px 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.button:hover:not(:disabled) {
+  background: #c40812;
+}
+
+.button:disabled {
+  background: #444;
+  cursor: not-allowed;
+}
