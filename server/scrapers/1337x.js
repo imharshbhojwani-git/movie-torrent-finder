@@ -6,7 +6,21 @@ const MIRRORS = [
   "https://1337x.st",
   "https://1337x.is",
   "https://x1337x.ws",
+  "https://1337x.gd",
 ];
+
+const HEADERS = {
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+  "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+  "Accept-Language": "en-US,en;q=0.9",
+  "Accept-Encoding": "gzip, deflate, br",
+  "Connection": "keep-alive",
+  "Upgrade-Insecure-Requests": "1",
+  "Sec-Fetch-Dest": "document",
+  "Sec-Fetch-Mode": "navigate",
+  "Sec-Fetch-Site": "none",
+  "Cache-Control": "max-age=0",
+};
 
 async function search1337x(query) {
   for (const base of MIRRORS) {
@@ -14,9 +28,7 @@ async function search1337x(query) {
       const url = `${base}/search/${encodeURIComponent(query)}/1/`;
       const res = await axios.get(url, {
         timeout: 15000,
-        headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
-        },
+        headers: { ...HEADERS, "Referer": base },
       });
 
       const $ = cheerio.load(res.data);
@@ -57,9 +69,7 @@ async function getMagnet(url) {
   try {
     const res = await axios.get(url, {
       timeout: 12000,
-      headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
-      },
+      headers: HEADERS,
     });
     const $ = cheerio.load(res.data);
     return $('a[href^="magnet:"]').attr("href") || null;
