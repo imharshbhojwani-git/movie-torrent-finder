@@ -1,52 +1,64 @@
 const axios = require("axios");
+const { fetchWithPowerShell } = require("../utils/psfetch");
 
 const APIBAY_MIRRORS = [
   "https://apibay.org",
-  "https://pirates-of-the-caribbean.eu",
+  "https://apibay.la",
 ];
 
 async function searchPirateBay(query) {
+  // Sanitize query for PowerShell safety
+  const safeQuery = query.replace(/['"`;]/g, "");
+
   for (const base of APIBAY_MIRRORS) {
+    const url = `${base}/q.php?q=${encodeURIComponent(safeQuery)}&cat=200`;
+
+    // Try axios first
+    let raw = null;
     try {
-      const res = await axios.get(`${base}/q.php`, {
-        params: { q: query, cat: 200 },
-        timeout: 15000,
-        headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
-        },
+      const res = await axios.get(url, {
+        timeout: 12000,
+        headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36" },
       });
-
-      const items = res.data;
-      if (!Array.isArray(items) || items[0]?.name === "No results returned") return [];
-
-      const torrents = items
-        .filter((t) => parseInt(t.seeders) > 0)
-        .slice(0, 20)
-        .map((t) => ({
-          quality: detectQuality(t.name),
-          type: "web",
-          size: formatSize(parseInt(t.size)),
-          seeds: parseInt(t.seeders),
-          peers: parseInt(t.leechers),
-          magnet: buildMagnet(t.info_hash, t.name),
-          name: t.name,
-        }));
-
-      if (torrents.length === 0) return [];
-
-      return [{
-        source: "PirateBay",
-        title: query,
-        year: null,
-        rating: null,
-        poster: null,
-        summary: null,
-        genres: [],
-        torrents,
-      }];
-    } catch (err) {
-      console.error(`apibay mirror ${base} failed:`, err.message);
+      raw = res.data;
+    } catch (axiosErr) {
+      console.log(`axios failed for ${base}, trying PowerShell...`);
+      try {
+        const text = await fetchWithPowerShell(url);
+        raw = JSON.parse(text);
+      } catch (psErr) {
+        console.error(`PowerShell also failed for ${base}:`, psErr.message);
+        continue;
+      }
     }
+
+    if (!Array.isArray(raw) || raw[0]?.name === "No results returned") continue;
+
+    const torrents = raw
+      .filter((t) => parseInt(t.seeders) > 0)
+      .slice(0, 20)
+      .map((t) => ({
+        quality: detectQuality(t.name),
+        type: "web",
+        size: formatSize(parseInt(t.size)),
+        seeds: parseInt(t.seeders),
+        peers: parseInt(t.leechers),
+        magnet: buildMagnet(t.info_hash, t.name),
+        name: t.name,
+      }));
+
+    if (torrents.length === 0) continue;
+
+    return [{
+      source: "PirateBay",
+      title: query,
+      year: null,
+      rating: null,
+      poster: null,
+      summary: null,
+      genres: [],
+      torrents,
+    }];
   }
   return [];
 }
