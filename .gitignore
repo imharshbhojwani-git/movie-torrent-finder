@@ -3,4 +3,6 @@ client/node_modules/
 server/node_modules/
 dist/
 .env
+client/.env
+server/.env
 .DS_Store

@@ -1,6 +1,10 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { searchAll } = require("./scrapers");
+const { requireAuth } = require("./middleware/auth");
+const authRoutes = require("./routes/auth");
+const adminRoutes = require("./routes/admin");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -8,7 +12,10 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-app.get("/api/search", async (req, res) => {
+app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
+
+app.get("/api/search", requireAuth, async (req, res) => {
   const query = req.query.q?.trim();
   if (!query) return res.status(400).json({ error: "Query is required" });
 
