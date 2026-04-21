@@ -1,11 +1,36 @@
-const { exec } = require("child_process");
+const { spawn } = require("child_process");
 
 function fetchWithPowerShell(url) {
   return new Promise((resolve, reject) => {
-    const cmd = `powershell -Command "try { $r = Invoke-WebRequest -Uri '${url}' -UseBasicParsing; $r.Content } catch { exit 1 }"`;
-    exec(cmd, { timeout: 30000 }, (err, stdout, stderr) => {
-      if (err) return reject(new Error("PowerShell fetch failed"));
+    const ps = spawn("powershell", [
+      "-NoProfile",
+      "-NonInteractive",
+      "-Command",
+      `Invoke-WebRequest -Uri '${url}' -UseBasicParsing | Select-Object -ExpandProperty Content`,
+    ]);
+
+    let stdout = "";
+    let stderr = "";
+
+    ps.stdout.on("data", (data) => (stdout += data));
+    ps.stderr.on("data", (data) => (stderr += data));
+
+    const timer = setTimeout(() => {
+      ps.kill();
+      reject(new Error("PowerShell timeout"));
+    }, 30000);
+
+    ps.on("close", (code) => {
+      clearTimeout(timer);
+      if (code !== 0) {
+        return reject(new Error(`PowerShell failed (code ${code}): ${stderr.trim()}`));
+      }
       resolve(stdout.trim());
+    });
+
+    ps.on("error", (err) => {
+      clearTimeout(timer);
+      reject(err);
     });
   });
 }
